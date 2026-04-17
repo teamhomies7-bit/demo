@@ -1,0 +1,152 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 7: Electric & Neon (Jarvis AI Customization for Indian Context)",
+  "colors": {
+    "background": {
+      "base": "#050505",
+      "surface": "#12121A",
+      "elevated": "#1A1A24"
+    },
+    "primary": {
+      "cyan": "#00F0FF",
+      "indigo": "#4D00FF",
+      "glow": "rgba(0, 240, 255, 0.4)"
+    },
+    "accent": {
+      "saffron": "#FF9933",
+      "rose": "#FF0055"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "rgba(255, 255, 255, 0.7)",
+      "muted": "rgba(255, 255, 255, 0.4)"
+    },
+    "borders": {
+      "subtle": "rgba(255, 255, 255, 0.08)",
+      "active": "rgba(0, 240, 255, 0.3)"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Outfit",
+      "body": "Plus Jakarta Sans"
+    },
+    "packages_required": [
+      "@expo-google-fonts/outfit",
+      "@expo-google-fonts/plus-jakarta-sans"
+    ],
+    "scale": {
+      "h1": {
+        "fontSize": 40,
+        "lineHeight": 44,
+        "letterSpacing": -1,
+        "fontFamily": "Outfit_700Bold"
+      },
+      "h2": {
+        "fontSize": 32,
+        "lineHeight": 36,
+        "letterSpacing": -0.5,
+        "fontFamily": "Outfit_600SemiBold"
+      },
+      "h3": {
+        "fontSize": 24,
+        "lineHeight": 28,
+        "letterSpacing": 0,
+        "fontFamily": "Outfit_500Medium"
+      },
+      "body": {
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fontFamily": "PlusJakartaSans_400Regular",
+        "color": "rgba(255, 255, 255, 0.7)"
+      },
+      "caption": {
+        "fontSize": 12,
+        "lineHeight": 16,
+        "letterSpacing": 1.5,
+        "textTransform": "uppercase",
+        "fontFamily": "PlusJakartaSans_600SemiBold",
+        "color": "rgba(255, 255, 255, 0.4)"
+      }
+    }
+  },
+  "layout_and_spacing": {
+    "container_padding": 24,
+    "border_radius": {
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "pill": 999
+    },
+    "bento_gap": 16
+  },
+  "components": {
+    "TabBar": {
+      "style": "Floating BlurView at the bottom, position: 'absolute', bottom: 24, left: 24, right: 24, borderRadius: 32, height: 64, overflow: 'hidden'",
+      "background": "intensity=20, tint='dark'",
+      "active_icon": "Cyan tint with a 4px cyan dot underneath the icon to indicate active state."
+    },
+    "AIChat": {
+      "user_bubble": "Align right, BlurView background (intensity=10, tint='dark'), borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 4, padding: 16",
+      "ai_bubble": "Align left, NO background (transparent), borderLeftWidth: 2, borderColor: '#00F0FF', paddingLeft: 16, textColor: '#FFFFFF', paddingVertical: 8",
+      "voice_orb": "Absolute bottom center (floating above chat input), 72x72 circle, LinearGradient ('#00F0FF' to '#4D00FF'), shadowColor: '#00F0FF', shadowRadius: 20, shadowOpacity: 0.6"
+    },
+    "BentoCards": {
+      "base": "Use Expo BlurView (intensity 15, dark tint), backgroundColor: 'rgba(26, 26, 36, 0.4)', borderRadius: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', padding: 20, overflow: 'hidden'",
+      "image_background": "If card has an image (like Weather/Travel), wrap in ImageBackground, add absolute positioned LinearGradient (transparent to #050505) overlay so text remains perfectly readable."
+    },
+    "ActionChips": {
+      "style": "flexDirection: 'row', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: 'rgba(0, 240, 255, 0.05)', borderWidth: 1, borderColor: 'rgba(0, 240, 255, 0.2)'"
+    },
+    "Inputs": {
+      "style": "backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 16, color: '#FFFFFF', paddingHorizontal: 16, height: 56, fontSize: 16"
+    }
+  },
+  "media": {
+    "images": {
+      "user_avatar": {
+        "url": "https://images.unsplash.com/photo-1589386417686-0d34b5903d23?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB5b3VuZyUyMHByb2Zlc3Npb25hbCUyMHBvcnRyYWl0fGVufDB8fHx8MTc3NjQ1NjY3OHww&ixlib=rb-4.1.0&q=85",
+        "description": "Indian young professional for settings/profile avatar"
+      },
+      "weather_bg": {
+        "url": "https://images.unsplash.com/photo-1737842827966-a265d8908509?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwyfHxzdG9ybSUyMGNsb3VkcyUyMGRhcmslMjBuaWdodHxlbnwwfHx8fDE3NzY0NTY2Nzh8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark storm clouds for the weather bento card background"
+      },
+      "travel_train": {
+        "url": "https://images.unsplash.com/photo-1717481278972-f56687d0a37b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjByYWlsd2F5cyUyMHRyYWlufGVufDB8fHx8MTc3NjQ1NjY2MXww&ixlib=rb-4.1.0&q=85",
+        "description": "Indian railways train for the travel/railway section"
+      },
+      "travel_monument": {
+        "url": "https://images.unsplash.com/photo-1545126178-862cdb469409?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwxfHxpbmRpYSUyMG1vbnVtZW50JTIwbmlnaHR8ZW58MHx8fHwxNzc2NDU2NjYxfDA&ixlib=rb-4.1.0&q=85",
+        "description": "Indian palace monument at night for tourist places section"
+      },
+      "entertainment_movie": {
+        "url": "https://images.unsplash.com/photo-1688678004647-945d5aaf91c1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHRoZWF0ZXIlMjBzY3JlZW58ZW58MHx8fHwxNzc2NDU2Njc4fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Movie theater screen for the entertainment and OTT section"
+      }
+    }
+  },
+  "motion": {
+    "libraries": [
+      "react-native-reanimated"
+    ],
+    "rules": [
+      "Use react-native-reanimated for smooth 60fps animations on the UI thread.",
+      "Entrance animations: Fade in and slide up (translateY: 20 -> 0) for bento cards in the Dashboard.",
+      "Microinteractions: Scale down to 0.96 on press (TouchableOpacity/Pressable) for all cards and buttons.",
+      "AI Voice Orb: Continuous breathing scale animation (1.0 -> 1.15 -> 1.0) with pulsing opacity on the shadow to signify Jarvis is 'listening'."
+    ]
+  },
+  "instructions_to_main_agent": [
+    "This is an Expo React Native mobile app. DO NOT output HTML/Web tags (no <div>, <span>, etc.). You MUST use React Native primitives: View, Text, TouchableOpacity, ScrollView, Image, StyleSheet.",
+    "Do not use Tailwind CSS web classes unless you are setting up NativeWind. If you rely on StyleSheet, map these guidelines precisely to React Native styles.",
+    "REQUIRED LIBRARIES to install and use: 'expo-blur' (for Glassmorphism), 'expo-linear-gradient' (for depth and AI glows), 'react-native-reanimated' (for fluid motion), and '@expo/vector-icons' (Ionicons or Feather preferred).",
+    "THEME EXECUTION: Electric Neon + Cinematic Dark. The app should feel like an elite, futuristic Jarvis interface built for India. Dark mode is permanent and default.",
+    "BACKGROUND: Base color must be #050505 (Void Black). Never use plain #000000. Use LinearGradient for main screen backgrounds (e.g., top-left: #12121A, bottom-right: #050505) to add subtle depth.",
+    "GLASSMORPHISM: Heavily utilize Expo <BlurView intensity={20} tint='dark'> for the Bottom Tab Bar, floating Sticky Headers, and inner backgrounds of Bento Cards.",
+    "NAVIGATION: Build a custom bottom tab bar. Do not use the default OS background. The tab bar should float (position: 'absolute', bottom: 24, marginHorizontal: 24) and be wrapped inside a BlurView.",
+    "CULTURAL CONTEXT (India): Keep AI sleek/Jarvis-like but use the Saffron accent (#FF9933) sparingly for alerts, priority tasks, or travel notifications.",
+    "TESTING: Every clickable element and major container MUST have a 'testID' prop (e.g., testID='chat-submit-button') to satisfy the strict testing requirement.",
+    "TYPOGRAPHY: If possible, load '@expo-google-fonts/outfit' for headers and '@expo-google-fonts/plus-jakarta-sans' for body. If font loading is skipped in MVP, fallback to system fonts but strictly maintain the font sizes, weights, and letter spacings defined in this JSON."
+  ]
+}
