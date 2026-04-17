@@ -519,6 +519,11 @@ async def get_daily_briefing(city: str = "Mumbai"):
 # ===========================
 # APP SETUP
 # ===========================
+@api_router.get("/health")
+async def health_check():
+    return {"status": "ok", "app": "Aria AI Assistant", "version": "1.0.0"}
+
+
 app.include_router(api_router)
 
 app.add_middleware(
