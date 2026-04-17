@@ -13,6 +13,8 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import tempfile
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from emergentintegrations.llm.openai import OpenAISpeechToText
@@ -524,6 +526,120 @@ async def health_check():
     return {"status": "ok", "app": "Aria AI Assistant", "version": "1.0.0"}
 
 
+# ===========================
+# PUSH NOTIFICATIONS & NIGHT SUMMARY
+# ===========================
+class PushTokenCreate(BaseModel):
+    token: str
+    user_name: str = "User"
+    language: str = "en"
+
+@api_router.post("/notifications/register")
+async def register_push_token(data: PushTokenCreate):
+    await db.push_tokens.replace_one(
+        {"token": data.token},
+        {"token": data.token, "user_name": data.user_name, "language": data.language,
+         "updated_at": datetime.now(timezone.utc).isoformat()},
+        upsert=True
+    )
+    return {"message": "Push token registered", "token_preview": data.token[:20] + "..."}
+
+async def _send_expo_notification(token: str, title: str, body: str, data: dict = None):
+    """Send push notification via Expo Push Notification Service (uses FCM internally)"""
+    try:
+        async with httpx.AsyncClient(timeout=10) as hc:
+            await hc.post(
+                "https://exp.host/--/api/v2/push/send",
+                json={"to": token, "title": title, "body": body,
+                      "data": data or {}, "sound": "default", "priority": "normal"},
+                headers={"Content-Type": "application/json"}
+            )
+    except Exception as e:
+        logger.error(f"Expo notification send error: {e}")
+
+@api_router.get("/night-summary")
+async def get_night_summary(user_name: str = "User", language: str = "en"):
+    """Generate AI-powered night summary of the day"""
+    try:
+        completed = await db.tasks.find({"completed": True}, {"_id": 0}).to_list(10)
+        pending = await db.tasks.find({"completed": False}, {"_id": 0}).to_list(8)
+
+        completed_titles = [t["title"] for t in completed[:5]] or ["nothing yet today"]
+        pending_titles = [t["title"] for t in pending[:5]] or ["no pending tasks"]
+
+        lang_str = "Hindi (Devanagari script)" if language == "hi" else "English"
+        prompt = f"""Generate a warm, personal night summary in {lang_str} for {user_name}.
+
+Today completed: {', '.join(completed_titles)}
+Tomorrow pending: {', '.join(pending_titles)}
+
+Write exactly 3-4 warm sentences:
+1. Greet with "Good night" and acknowledge today's work
+2. Mention 1-2 key accomplishments or note if it was a fresh start
+3. Briefly mention tomorrow's top priority task (if any)
+4. End with a short motivational line
+
+Style: warm, friendly, conversational Indian English (or Hindi if requested). Max 80 words. No bullet points."""
+
+        session_id = f"night_{uuid.uuid4().hex[:8]}"
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message="You are Aria, a warm personal AI assistant for Indian users."
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+
+        summary = await chat.send_message(UserMessage(text=prompt))
+
+        return {
+            "summary": summary,
+            "completed_count": len(completed),
+            "pending_count": len(pending),
+            "user_name": user_name
+        }
+    except Exception as e:
+        logger.error(f"Night summary error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/notifications/send-night-summary")
+async def trigger_night_summary_notifications():
+    """Manually trigger night summary notifications (also called by scheduler at 9 PM IST)"""
+    tokens = await db.push_tokens.find({}, {"_id": 0}).to_list(500)
+    if not tokens:
+        return {"message": "No registered tokens", "sent": 0}
+
+    sent = 0
+    for token_doc in tokens:
+        try:
+            summary_data = await get_night_summary(
+                user_name=token_doc.get("user_name", "User"),
+                language=token_doc.get("language", "en")
+            )
+            body_text = summary_data["summary"]
+            if len(body_text) > 250:
+                body_text = body_text[:247] + "..."
+
+            await _send_expo_notification(
+                token=token_doc["token"],
+                title=f"🌙 Good Night, {token_doc.get('user_name', 'Friend')}!",
+                body=body_text,
+                data={"screen": "dashboard", "type": "night_summary"}
+            )
+            sent += 1
+        except Exception as e:
+            logger.error(f"Night summary send error: {e}")
+
+    return {"message": "Night summary notifications sent", "sent": sent, "total_tokens": len(tokens)}
+
+async def _scheduled_night_summary():
+    """APScheduler job: runs at 9 PM IST every day"""
+    logger.info("⏰ APScheduler: Sending nightly summary notifications...")
+    try:
+        await trigger_night_summary_notifications()
+        logger.info("✅ Nightly summary notifications sent successfully")
+    except Exception as e:
+        logger.error(f"Scheduled night summary error: {e}")
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -534,6 +650,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+_scheduler = AsyncIOScheduler()
+
+@app.on_event("startup")
+async def startup_event():
+    _scheduler.add_job(
+        _scheduled_night_summary,
+        CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"),
+        id="night_summary",
+        replace_existing=True
+    )
+    _scheduler.start()
+    logger.info("✅ APScheduler started — Night Summary scheduled at 9 PM IST daily")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    if _scheduler.running:
+        _scheduler.shutdown()
     client.close()

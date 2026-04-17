@@ -10,6 +10,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioRecorder, AudioModule, RecordingPresets } from 'expo-audio';
 import { COLORS, FONTS, API_URL } from '../../constants';
+import { useUserProfile } from '../../hooks/useUserProfile';
 
 type Message = { id: string; role: 'user' | 'assistant'; content: string; timestamp: string };
 
@@ -25,6 +26,7 @@ const QUICK_PROMPTS = [
 ];
 
 export default function ChatScreen() {
+  const { profile } = useUserProfile();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -32,6 +34,10 @@ export default function ChatScreen() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+
+  useEffect(() => {
+    if (profile.language) setLanguage(profile.language);
+  }, [profile.language]);
   const flatListRef = useRef<FlatList>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 

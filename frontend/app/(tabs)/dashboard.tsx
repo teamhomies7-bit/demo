@@ -9,6 +9,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { COLORS, FONTS, API_URL } from '../../constants';
+import { useUserProfile } from '../../hooks/useUserProfile';
 
 type WeatherData = {
   city: string; temperature: number; feels_like: number;
@@ -22,13 +23,15 @@ type TaskItem = { id: string; title: string; priority: string; completed: boolea
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { profile } = useUserProfile();
   const [briefing, setBriefing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchBriefing = useCallback(async () => {
+  const fetchBriefing = useCallback(async (city?: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/briefing?city=Mumbai`);
+      const cityToUse = city || profile.city || 'Mumbai';
+      const res = await fetch(`${API_URL}/api/briefing?city=${encodeURIComponent(cityToUse)}`);
       const data = await res.json();
       setBriefing(data);
     } catch (e) {
@@ -37,9 +40,9 @@ export default function DashboardScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [profile.city]);
 
-  useEffect(() => { fetchBriefing(); }, []);
+  useEffect(() => { fetchBriefing(); }, [profile.city]);
 
   const onRefresh = () => { setRefreshing(true); fetchBriefing(); };
 
@@ -88,12 +91,16 @@ export default function DashboardScreen() {
           {/* Header */}
           <View style={styles.header} testID="dashboard-header">
             <View>
-              <Text style={styles.greeting}>{briefing?.greeting || 'Good Morning! 🌅'}</Text>
+              <Text style={styles.greeting}>
+                {briefing?.greeting || 'Good Morning! 🌅'}{profile.name ? `, ${profile.name.split(' ')[0]}` : ''}
+              </Text>
               <Text style={styles.date}>{briefing?.date || new Date().toDateString()}</Text>
             </View>
-            <TouchableOpacity testID="profile-btn" style={styles.avatarBtn} activeOpacity={0.8}>
+            <TouchableOpacity testID="profile-btn" style={styles.avatarBtn} activeOpacity={0.8}
+              onPress={() => router.push('/profile')}
+            >
               <LinearGradient colors={[COLORS.cyan, COLORS.indigo]} style={styles.avatar}>
-                <Text style={styles.avatarText}>A</Text>
+                <Text style={styles.avatarText}>{profile.name ? profile.name.charAt(0).toUpperCase() : '👤'}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
