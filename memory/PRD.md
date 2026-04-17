@@ -65,7 +65,19 @@
 
 ## What's Been Implemented (April 2026)
 
-### MVP v1.0 - April 18, 2026
+### MVP v1.1 - April 18, 2026 (Feature Addition)
+- ✅ User Profile screen (`app/profile.tsx`) with name, city picker, language toggle, night summary settings
+- ✅ 57 Indian cities searchable picker with modal + search
+- ✅ AsyncStorage (with web localStorage fallback) for persisting profile preferences
+- ✅ Dashboard uses user's selected city for weather (no longer hardcoded to Mumbai)
+- ✅ Dashboard shows personalized greeting with user's name
+- ✅ Chat screen default language synced from profile preference
+- ✅ Night Summary feature — AI generates personalized 9 PM recap using Claude Sonnet 4.5
+- ✅ APScheduler runs daily job at 9 PM IST to send night summary notifications
+- ✅ Expo Push Notification service integration (uses FCM internally for Android)
+- ✅ Push token registration endpoint (`POST /api/notifications/register`)
+- ✅ Night Summary preview endpoint (`GET /api/night-summary`)
+- ✅ Manual trigger endpoint (`POST /api/notifications/send-night-summary`)
 - ✅ Complete Expo React Native frontend with 5 tabs
 - ✅ Floating BlurView tab bar (Jarvis-style dark design)
 - ✅ AI Chat with Claude Sonnet 4.5 + session management + MongoDB persistence

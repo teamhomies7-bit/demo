@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect, useCallback } from 'react';
+import { Platform } from 'react-native';
 
 export type UserProfile = {
   name: string;
@@ -19,6 +20,23 @@ export const DEFAULT_PROFILE: UserProfile = {
 
 const STORAGE_KEY = 'aria_user_profile_v1';
 
+// Cross-platform storage helpers
+const storage = {
+  getItem: async (key: string): Promise<string | null> => {
+    if (Platform.OS === 'web') {
+      return typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null;
+    }
+    return AsyncStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    if (Platform.OS === 'web') {
+      if (typeof localStorage !== 'undefined') localStorage.setItem(key, value);
+      return;
+    }
+    return AsyncStorage.setItem(key, value);
+  },
+};
+
 export function useUserProfile() {
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(true);
@@ -29,7 +47,7 @@ export function useUserProfile() {
 
   const loadProfile = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      const stored = await storage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         setProfile({ ...DEFAULT_PROFILE, ...parsed });
@@ -44,7 +62,7 @@ export function useUserProfile() {
   const saveProfile = useCallback(async (updates: Partial<UserProfile>) => {
     setProfile(prev => {
       const newProfile = { ...prev, ...updates };
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newProfile)).catch(console.error);
+      storage.setItem(STORAGE_KEY, JSON.stringify(newProfile)).catch(console.error);
       return newProfile;
     });
   }, []);
